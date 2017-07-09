@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <TextView
+        android:id="@+id/textView4"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Current Waypoint" />
+
+    <Spinner
+        android:id="@+id/currLoc"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
+    <TextView
+        android:id="@+id/textView6"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Time you can spend(min)" />
+
+    <EditText
+        android:id="@+id/timeSpnd"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:ems="10"
+        android:inputType="number" />
+
+    <Button
+        android:id="@+id/optimusBtn"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Retrieve" />
+
+    <Button
+        android:id="@+id/anaBtn"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Analyze" />
+
+    <ListView
+        android:id="@+id/suggestionList"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+</LinearLayout>

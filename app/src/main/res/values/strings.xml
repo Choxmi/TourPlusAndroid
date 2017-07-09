@@ -1,0 +1,8 @@
+<resources>
+    <string name="app_name">TourPlus</string>
+    <string name="title_activity_maps">Map</string>
+    <string name="title_activity_waiting">WaitingTime</string>
+    <string name="title_activity_new">Add new places</string>
+    <string name="title_places">Select waypoints</string>
+    <string name="map_key">AIzaSyAWHlR_7azwcPbaX7h5rwim_7yvok3_LlA</string>
+</resources>
