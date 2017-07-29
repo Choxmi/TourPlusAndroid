@@ -48,7 +48,7 @@ public class PlaceSelectActivity extends AppCompatActivity implements AsyncRespo
         descTxt = (TextView) findViewById(R.id.descTxt);
         pd = new ProgressDialog(PlaceSelectActivity.this,ProgressDialog.STYLE_SPINNER);
         listView = (ListView)findViewById(R.id.place_list);
-
+        //Get all location data from our database using the URL
         try {
             connector = new GenericConnector("https://harvester.000webhostapp.com/Tour.php?status=pull");
             connector.delegate = PlaceSelectActivity.this;
@@ -60,10 +60,12 @@ public class PlaceSelectActivity extends AppCompatActivity implements AsyncRespo
         pd.show();
     }
 
+    //Get the result from the URL as a JSON
     @Override
     public void processFinish(String response) {
         pd.hide();
         String[] strArr=null;
+        //Convert JSON data to an LocationDetails objects
         try {
             JSONArray ja = new JSONArray(response);
             strArr = new String[ja.length()];
@@ -83,6 +85,7 @@ public class PlaceSelectActivity extends AppCompatActivity implements AsyncRespo
         }
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(PlaceSelectActivity.this,android.R.layout.simple_dropdown_item_1line,strArr);
         textView.setAdapter(adapter);
+        
         final ArrayList<LocationDetails> selected = new ArrayList<>();
         add_btn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -100,12 +103,12 @@ public class PlaceSelectActivity extends AppCompatActivity implements AsyncRespo
                 textView.setText("");
             }
         });
-
+        
         adapter_mul = new ArrayAdapter<String>(this,
                 android.R.layout.simple_list_item_multiple_choice, strArr);
         listView.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE);
         listView.setAdapter(adapter_mul);
-
+        //Add the selected locatio to selected list and show the description
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
@@ -120,6 +123,7 @@ public class PlaceSelectActivity extends AppCompatActivity implements AsyncRespo
         });
 
         selected.clear();
+        //Proceed to RouteSelector Activity
         continue_btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
