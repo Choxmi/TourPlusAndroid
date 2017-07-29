@@ -18,7 +18,7 @@ import java.util.Map;
 /**
  * Created by choxmi on 6/22/17.
  */
-
+//This class is for the suggestion generation part
 public class RouteListActivity extends AppCompatActivity {
 
     ExpandableListAdapter listAdapter;
@@ -26,13 +26,15 @@ public class RouteListActivity extends AppCompatActivity {
     List<String> listDataHeader,listDataChild;
     Intent intent;
     Map<String,ArrayList<LocationDetails>> routeList;
-
+    
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_routes);
+        //Get data from Place selector activity.
         intent = getIntent();
         expListView = (ExpandableListView) findViewById(R.id.expList);
+        //Refer preparedListData method
         prepareListData();
         listAdapter = new ExpandableListAdapter(this, listDataHeader, listDataChild);
 
@@ -92,14 +94,17 @@ public class RouteListActivity extends AppCompatActivity {
         });
     }
 
+    //This method generate suggestions about the route.
     private void prepareListData() {
         listDataHeader = new ArrayList<String>();
         listDataChild = new ArrayList<String>();
         routeList = new HashMap<>();
-
+        //Get the selected location list from the intent
         ArrayList<LocationDetails> ld = (ArrayList<LocationDetails>)intent.getSerializableExtra("selected");
+        //Shuffle the locations and generate all possible routes
         for(int i = 0;i<ld.size();i++){
             listDataHeader.add("Route "+(i+1));
+            //Randomize the selection by shuffling the location list
             Collections.shuffle(ld);
             String child = "";
             ArrayList<LocationDetails> temp = new ArrayList<>();
@@ -107,8 +112,10 @@ public class RouteListActivity extends AppCompatActivity {
                 child += ld.get(j).getLoc_name()+" -> ";
                 temp.add(ld.get(j));
             }
+            //Add shuffled locations list to the list. One result for one possible route.
             listDataChild.add(child);
             routeList.put(""+i,temp);
+            //After adding one result, it will display in expListView. Likewise it'll happen to every possible route.
         }
     }
 }
