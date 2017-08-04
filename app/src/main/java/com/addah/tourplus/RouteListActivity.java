@@ -117,25 +117,42 @@ public class RouteListActivity extends AppCompatActivity implements AsyncRespons
         ArrayList<LocationDetails> ld = (ArrayList<LocationDetails>)intent.getSerializableExtra("selected");
         for(int i = 0;i<ld.size();i++){
             listDataHeader.add("Route "+(i+1));
-            Collections.shuffle(ld);
             String child = "";
             ArrayList<LocationDetails> temp = new ArrayList<>();
-            for(int j = 0;j<ld.size();j++) {
+            LocationDetails last = ld.get(ld.size()-1);
+            for(int j = 0;j<(ld.size());j++) {
                 child += ld.get(j).getLoc_name()+" -> ";
                 temp.add(ld.get(j));
             }
+
             String waypoints = "";
+            String wpStr = "";
             for (int x = 0; x < (ld.size()); x++) {
-                if (i == 0) {
+                if (x == 0) {
                     waypoints = "via:" + temp.get(x).getLat() + "%2C" + temp.get(x).getLng();
+                    wpStr = temp.get(x).getLoc_name();
                 } else {
-                    waypoints = waypoints + "|via:" + temp.get(x).getLat() + "%2C" + temp.get(x).getLng();
+                    waypoints += "|via:" + temp.get(x).getLat() + "%2C" + temp.get(x).getLng();
+                    wpStr += temp.get(x).getLoc_name();
                 }
-                LatLng sl = new LatLng(temp.get(x).getLat(), temp.get(x).getLng());
             }
+            Log.e("Waypoint : ",wpStr);
+            LocationDetails tempHolderNew = null,tempHolderOld;
+            for(int j = 0;j<(ld.size());j++) {
+                if(j==0){
+                    tempHolderNew = ld.get(0);
+                    ld.set(0,ld.get(ld.size()-1));
+                }else{
+                    tempHolderOld = tempHolderNew;
+                    tempHolderNew = ld.get(j);
+                    ld.set(j,tempHolderOld);
+                }
+            }
+
             listDataChild.add(child);
             routeList.put(""+i,temp);
-            CostConnector connector = new CostConnector("https://maps.googleapis.com/maps/api/directions/xml?origin="+startLoc.getLat() + "%2C" + startLoc.getLng()+"&destination=" + temp.get(ld.size()-1).getLat() + "%2C" + temp.get(ld.size()-1).getLng() + "&key=AIzaSyCuPQ_L8oFl3tTP7GvdAKTbWe1Cqeu4GXw");
+            CostConnector connector = new CostConnector("https://maps.googleapis.com/maps/api/directions/xml?origin="+startLoc.getLat() + "%2C" + startLoc.getLng()+"&destination=" + temp.get(ld.size()-1).getLat() + "%2C" + temp.get(ld.size()-1).getLng() +"&waypoints=" + waypoints + "&key=AIzaSyCuPQ_L8oFl3tTP7GvdAKTbWe1Cqeu4GXw","Route "+(i+1));
+            Log.e("URL","https://maps.googleapis.com/maps/api/directions/xml?origin="+startLoc.getLat() + "%2C" + startLoc.getLng()+"&destination=" + temp.get(ld.size()-1).getLat() + "%2C" + temp.get(ld.size()-1).getLng() +"&waypoints=" + waypoints + "&key=AIzaSyCuPQ_L8oFl3tTP7GvdAKTbWe1Cqeu4GXw");
             connector.delegate = RouteListActivity.this;
             connector.execute();
         }
@@ -144,7 +161,7 @@ public class RouteListActivity extends AppCompatActivity implements AsyncRespons
     @Override
     public void processFinish(String response) {
         String dist = response.substring(0, response.indexOf(' '));
-        Log.e("Dist",dist);
+        dist = dist.replace(",","");
         double distance = Double.parseDouble(dist);
         distances.add(distance);
         process++;

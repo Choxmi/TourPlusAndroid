@@ -51,12 +51,12 @@ public class PlanningActivity extends AppCompatActivity implements AsyncResponse
         for (int i = 0; i <= (ld.size()-1); i++) {
             try {
                 if(i==0) {
-                    connector = new RouteConnector("https://maps.googleapis.com/maps/api/directions/xml?origin="+strt.getLat() + "%2C" + strt.getLng()+"&destination=" + ld.get(i).getLat() + "%2C" + ld.get(i).getLng() + "&key=AIzaSyCuPQ_L8oFl3tTP7GvdAKTbWe1Cqeu4GXw", "* "+strt.getLoc_name() + " to "+ld.get(i).getLoc_name(),"Waiting @ "+ld.get(i).getLoc_name()+" : "+ld.get(i).getWaiting_time()+" mins");
+                    connector = new RouteConnector("https://maps.googleapis.com/maps/api/directions/xml?origin="+strt.getLat() + "%2C" + strt.getLng()+"&destination=" + ld.get(i).getLat() + "%2C" + ld.get(i).getLng() + "&key=AIzaSyCuPQ_L8oFl3tTP7GvdAKTbWe1Cqeu4GXw", "* "+strt.getLoc_name() + " to "+ld.get(i).getLoc_name(),"Average time spent @ "+ld.get(i).getLoc_name()+" : "+ld.get(i).getWaiting_time()+" mins");
                     Log.e("URL","https://maps.googleapis.com/maps/api/directions/xml?origin="+strt.getLat() + "%2C" + strt.getLng()+"&destination=" + ld.get(i).getLat() + "%2C" + ld.get(i).getLng() + "&key=AIzaSyCuPQ_L8oFl3tTP7GvdAKTbWe1Cqeu4GXw");
                     totalWaiting += ld.get(i).getWaiting_time();
                 }
                 else{
-                    connector = new RouteConnector("https://maps.googleapis.com/maps/api/directions/xml?origin=" + ld.get(i-1).getLat() + "%2C" + ld.get(i-1).getLng() + "&destination=" + ld.get(i).getLat() + "%2C" + ld.get(i).getLng() + "&key=AIzaSyCuPQ_L8oFl3tTP7GvdAKTbWe1Cqeu4GXw","* "+ld.get(i-1).getLoc_name()+" to "+ld.get(i).getLoc_name(),"Waiting @ "+ld.get(i).getLoc_name()+" : "+ld.get(i).getWaiting_time()+" mins");
+                    connector = new RouteConnector("https://maps.googleapis.com/maps/api/directions/xml?origin=" + ld.get(i-1).getLat() + "%2C" + ld.get(i-1).getLng() + "&destination=" + ld.get(i).getLat() + "%2C" + ld.get(i).getLng() + "&key=AIzaSyCuPQ_L8oFl3tTP7GvdAKTbWe1Cqeu4GXw","* "+ld.get(i-1).getLoc_name()+" to "+ld.get(i).getLoc_name(),"Average time spent @ "+ld.get(i).getLoc_name()+" : "+ld.get(i).getWaiting_time()+" mins");
                     totalWaiting += ld.get(i).getWaiting_time();
                 }
                 connector.delegate = PlanningActivity.this;

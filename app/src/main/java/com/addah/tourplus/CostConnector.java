@@ -26,11 +26,12 @@ import javax.xml.parsers.ParserConfigurationException;
 public class CostConnector extends AsyncTask<String, String, String> {
     public AsyncResponse delegate = null;
 
-    String duration,distance;
+    String duration,distance,route;
     URL url;
 
-    public CostConnector(String urlString) throws MalformedURLException {
+    public CostConnector(String urlString,String route) throws MalformedURLException {
         this.url = new URL(urlString);
+        this.route = route;
     }
 
     @Override
@@ -83,7 +84,7 @@ public class CostConnector extends AsyncTask<String, String, String> {
         } catch (SAXException e) {
             e.printStackTrace();
         }
-        return distance + "|" +duration;
+        return distance + " km | " +duration+ " : " +route;
     }
 
     @Override
