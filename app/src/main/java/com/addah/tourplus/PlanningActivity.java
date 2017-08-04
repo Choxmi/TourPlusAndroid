@@ -32,6 +32,7 @@ public class PlanningActivity extends AppCompatActivity implements AsyncResponse
     int totalDu=0;
     int totalWaiting = 0;
     Button optBtn;
+    LocationDetails strt;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -44,19 +45,17 @@ public class PlanningActivity extends AppCompatActivity implements AsyncResponse
         optBtn = (Button)findViewById(R.id.optBtn);
         String waypoints = "";
         final Intent intent = getIntent();
-        //Get the selected locations and details about those selected places from the PlaceSelector Activity
         ArrayList<LocationDetails> ld = (ArrayList<LocationDetails>)intent.getSerializableExtra("selected");
+        strt = (LocationDetails) intent.getSerializableExtra("start");
 
-        //Go through every location and request distances between each locations destinations and other details about the location from Google maps
-        for (int i = 0; i <= ld.size(); i++) {
+        for (int i = 0; i <= (ld.size()-1); i++) {
             try {
                 if(i==0) {
-                    connector = new RouteConnector("https://maps.googleapis.com/maps/api/directions/xml?origin=colombo,sl&destination=" + ld.get(i).getLat() + "%2C" + ld.get(i).getLng() + "&key=AIzaSyCuPQ_L8oFl3tTP7GvdAKTbWe1Cqeu4GXw", "* Colombo to "+ld.get(i).getLoc_name(),"Waiting @ "+ld.get(i).getLoc_name()+" : "+ld.get(i).getWaiting_time()+" mins");
-                    Log.e("URL","https://maps.googleapis.com/maps/api/directions/xml?origin=colombo,sl&destination=" + ld.get(i).getLat() + "%2C" + ld.get(i).getLng() + "&key=AIzaSyCuPQ_L8oFl3tTP7GvdAKTbWe1Cqeu4GXw");
+                    connector = new RouteConnector("https://maps.googleapis.com/maps/api/directions/xml?origin="+strt.getLat() + "%2C" + strt.getLng()+"&destination=" + ld.get(i).getLat() + "%2C" + ld.get(i).getLng() + "&key=AIzaSyCuPQ_L8oFl3tTP7GvdAKTbWe1Cqeu4GXw", "* "+strt.getLoc_name() + " to "+ld.get(i).getLoc_name(),"Waiting @ "+ld.get(i).getLoc_name()+" : "+ld.get(i).getWaiting_time()+" mins");
+                    Log.e("URL","https://maps.googleapis.com/maps/api/directions/xml?origin="+strt.getLat() + "%2C" + strt.getLng()+"&destination=" + ld.get(i).getLat() + "%2C" + ld.get(i).getLng() + "&key=AIzaSyCuPQ_L8oFl3tTP7GvdAKTbWe1Cqeu4GXw");
                     totalWaiting += ld.get(i).getWaiting_time();
-                }else if(i==(ld.size())){
-                    connector = new RouteConnector("https://maps.googleapis.com/maps/api/directions/xml?origin=" + ld.get(i-1).getLat() + "%2C" + ld.get(i-1).getLng() + "&destination=jaffna,sl&key=AIzaSyCuPQ_L8oFl3tTP7GvdAKTbWe1Cqeu4GXw","* "+ld.get(i-1).getLoc_name()+" to Jaffna","Destination Arrived");
-                }else{
+                }
+                else{
                     connector = new RouteConnector("https://maps.googleapis.com/maps/api/directions/xml?origin=" + ld.get(i-1).getLat() + "%2C" + ld.get(i-1).getLng() + "&destination=" + ld.get(i).getLat() + "%2C" + ld.get(i).getLng() + "&key=AIzaSyCuPQ_L8oFl3tTP7GvdAKTbWe1Cqeu4GXw","* "+ld.get(i-1).getLoc_name()+" to "+ld.get(i).getLoc_name(),"Waiting @ "+ld.get(i).getLoc_name()+" : "+ld.get(i).getWaiting_time()+" mins");
                     totalWaiting += ld.get(i).getWaiting_time();
                 }
@@ -67,7 +66,6 @@ public class PlanningActivity extends AppCompatActivity implements AsyncResponse
             }
         }
 
-        //Get Latitude and Logitude values of each and every location and create a waypoint list which helps to define the path
         for (int i = 0; i < ld.size(); i++) {
             if (i == 0) {
                 waypoints = "via:" + ld.get(i).getLat() + "%2C" + ld.get(i).getLng();
@@ -79,9 +77,8 @@ public class PlanningActivity extends AppCompatActivity implements AsyncResponse
 
         Log.e("Waypoint", waypoints);
 
-        //Make a Google map request to get the destination and time. And the waiting time of every location will be added in the RouterConnector class.
         try {
-            connector = new RouteConnector("https://maps.googleapis.com/maps/api/directions/xml?origin=colombo,sl&destination=jaffna,sl&waypoints=" + waypoints + "&key=AIzaSyCuPQ_L8oFl3tTP7GvdAKTbWe1Cqeu4GXw","* Total Duration : ",""+totalWaiting+" mins");
+            connector = new RouteConnector("https://maps.googleapis.com/maps/api/directions/xml?origin="+strt.getLat() + "%2C" + strt.getLng()+"&destination="+ld.get(ld.size()-1).getLat() + "%2C+ "+ld.get(ld.size()-1).getLng()+"&waypoints=" + waypoints + "&key=AIzaSyCuPQ_L8oFl3tTP7GvdAKTbWe1Cqeu4GXw","* Total Duration : ",""+totalWaiting+" mins");
             connector.delegate = PlanningActivity.this;
             connector.execute();
         } catch (MalformedURLException e) {
@@ -97,7 +94,6 @@ public class PlanningActivity extends AppCompatActivity implements AsyncResponse
         });
     }
 
-    //Here we can retrieve all the responces from the API calls we made. List details will be added from here and that will be the final output.
     @Override
     public void processFinish(String response) {
         if(response.contains("-")){

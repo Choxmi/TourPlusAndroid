@@ -61,7 +61,7 @@ import javax.xml.parsers.ParserConfigurationException;
                 element.normalize();
 
             NodeList nList = doc.getElementsByTagName("duration");
-                Node node = null;
+            Node node = null;
             if(nList.getLength()>0) {
                 node = nList.item(nList.getLength() - 1);
             }else{

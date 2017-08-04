@@ -45,7 +45,6 @@ public class OptimizeActivity extends AppCompatActivity implements AsyncResponse
         analyzeBtn = (Button)findViewById(R.id.anaBtn);
         timeLimit = (EditText)findViewById(R.id.timeSpnd);
         final Intent intent = getIntent();
-        //Get selected path from the planning activity
         ld = (ArrayList<LocationDetails>)intent.getSerializableExtra("path");
         spinner = (Spinner)findViewById(R.id.currLoc);
         items = new ArrayList<>();
@@ -53,7 +52,7 @@ public class OptimizeActivity extends AppCompatActivity implements AsyncResponse
         adapter = new ArrayAdapter(this,android.R.layout.simple_list_item_1,items);
         rec = (ListView) findViewById(R.id.suggestionList);
         rec.setAdapter(adapter);
-        //List down the locations of the path
+
         List<String> list = new ArrayList<>();
         for(LocationDetails lds : ld){
             list.add(lds.getLoc_name());
@@ -61,7 +60,7 @@ public class OptimizeActivity extends AppCompatActivity implements AsyncResponse
         ArrayAdapter<String> dataAdapter = new ArrayAdapter<String>(this,R.layout.support_simple_spinner_dropdown_item,list);
         dataAdapter.setDropDownViewResource(R.layout.support_simple_spinner_dropdown_item);
         spinner.setAdapter(dataAdapter);
-        //Get the selected location
+
         spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
@@ -74,8 +73,7 @@ public class OptimizeActivity extends AppCompatActivity implements AsyncResponse
 
             }
         });
-        
-        //Request the distances between every location which are located after the user selected location. ProcessFinish method retrieve and add the result to a list.
+
         proceedBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -90,26 +88,22 @@ public class OptimizeActivity extends AppCompatActivity implements AsyncResponse
                 }
             }
         });
-        
-        //Analyze possible suggestions can make.
+
         analyzeBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 items.clear();
                 timeAvail = Integer.parseInt(timeLimit.getText().toString())*60;
                 int timeDirect=0,fullTime = 0;
-                //Add waiting time of each location to the resultset gained from Google map API call.
                 for(int i=0;i<timeGaps.size();i++){
                     timeDirect += timeGaps.get(i);
                     fullTime += timeDirect+ld.get(arrrayPosi+i).getWaiting_time();
                 }
                 Log.e("direct",""+timeDirect);
                 Log.e("time avail",""+timeAvail);
-                //Check the time require to complete full journey and time to go directly.
                 items.add("Time to Complete journey as planned : "+(fullTime/60)+" min");
                 items.add("Time to go Directly to destination : "+(timeDirect/60)+" min");
                 adapter.notifyDataSetChanged();
-                //Based on the Available time, output the best suggestion.
                 if(timeAvail>=fullTime){
                     Toast.makeText(OptimizeActivity.this,"Still have time",Toast.LENGTH_SHORT).show();
                 }else if(timeAvail>=timeDirect){

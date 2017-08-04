@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical" android:layout_width="match_parent"
     android:layout_height="match_parent">
 
@@ -10,6 +11,10 @@
         android:layout_gravity="right"
         android:text="Continue" />
 
+    <Spinner
+        android:id="@+id/start_spinner"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"></Spinner>
 
     <ListView
         android:id="@+id/place_list"
@@ -18,11 +23,25 @@
         android:layout_alignParentTop="true"
         />
 
-    <TextView
-        android:id="@+id/descTxt"
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:ems="10"/>
+        android:orientation="horizontal">
+
+        <TextView
+            android:id="@+id/descTxt"
+            android:layout_width="100px"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:ems="10" />
+
+        <ImageView
+            android:id="@+id/imageView"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            app:srcCompat="@drawable/amu_bubble_mask" />
+    </LinearLayout>
 
     <LinearLayout
         android:layout_width="match_parent"
