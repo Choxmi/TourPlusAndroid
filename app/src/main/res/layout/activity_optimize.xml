@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical" android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@android:color/holo_blue_bright"
+    android:orientation="vertical">
 
     <TextView
         android:id="@+id/textView4"
@@ -31,12 +33,18 @@
         android:id="@+id/optimusBtn"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginLeft="30dp"
+        android:layout_marginRight="30dp"
+        android:background="@android:color/holo_orange_light"
         android:text="Retrieve" />
 
     <Button
         android:id="@+id/anaBtn"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginLeft="30dp"
+        android:layout_marginRight="30dp"
+        android:background="@android:color/holo_orange_light"
         android:text="Analyze" />
 
     <ListView

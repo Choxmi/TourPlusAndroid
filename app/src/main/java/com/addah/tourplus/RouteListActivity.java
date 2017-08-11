@@ -35,6 +35,7 @@ public class RouteListActivity extends AppCompatActivity implements AsyncRespons
     TextView itemTxt,optimTxt;
     int process = 0;
     List<Double> distances;
+    int passengers = 0;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -45,6 +46,7 @@ public class RouteListActivity extends AppCompatActivity implements AsyncRespons
         itemTxt = (TextView)findViewById(R.id.itemTxt);
         optimTxt = (TextView)findViewById(R.id.optimTxt);
         startLoc = (LocationDetails) intent.getSerializableExtra("start");
+        passengers = Integer.parseInt(intent.getStringExtra("passengers"));
         distances = new ArrayList<>();
         try {
             prepareListData();
@@ -166,6 +168,6 @@ public class RouteListActivity extends AppCompatActivity implements AsyncRespons
         distances.add(distance);
         process++;
         itemTxt.setText(itemTxt.getText()+"\n"+"Route "+process+" : "+response);
-        optimTxt.setText("Shortest distance : "+Collections.min(distances)+" | Cost : Rs. "+(25*Collections.min(distances)));
+        optimTxt.setText("Shortest distance : "+Collections.min(distances)+" | Cost : Rs. "+(passengers*25*Collections.min(distances)));
     }
 }

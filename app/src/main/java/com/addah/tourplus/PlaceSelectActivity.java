@@ -40,6 +40,7 @@ public class PlaceSelectActivity extends AppCompatActivity implements AsyncRespo
     Spinner startSpinner;
     final ArrayList<LocationDetails> locations = new ArrayList<>();
     LocationDetails startingPoint;
+    EditText passengers;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -49,6 +50,7 @@ public class PlaceSelectActivity extends AppCompatActivity implements AsyncRespo
         add_btn = (Button)findViewById(R.id.add_btn);
         continue_btn = (Button)findViewById(R.id.cont_btn);
         descTxt = (TextView) findViewById(R.id.descTxt);
+        passengers = (EditText)findViewById(R.id.psngNum);
         pd = new ProgressDialog(PlaceSelectActivity.this,ProgressDialog.STYLE_SPINNER);
         listView = (ListView)findViewById(R.id.place_list);
         startSpinner = (Spinner)findViewById(R.id.start_spinner);
@@ -153,6 +155,7 @@ public class PlaceSelectActivity extends AppCompatActivity implements AsyncRespo
                 //Intent intent = new Intent(PlaceSelectActivity.this,MapsActivity.class);
                 intent.putExtra("selected",selected);
                 intent.putExtra("start",startingPoint);
+                intent.putExtra("passengers",passengers.getText().toString());
                 startActivity(intent);
             }
         });

@@ -58,7 +58,6 @@ public class WaitingTimeActivity extends AppCompatActivity implements AsyncRespo
 
     @Override
     public void processFinish(String response) {
-        Log.e("res",response);
         if(response.equals("done")){
             Toast.makeText(WaitingTimeActivity.this,"Place added successfully",Toast.LENGTH_LONG).show();
         }
