@@ -62,9 +62,7 @@ public class OptimizeActivity extends AppCompatActivity implements AsyncResponse
         final Intent intent = getIntent();
         ld = (ArrayList<LocationDetails>)intent.getSerializableExtra("path");
         gl = (ArrayList<Integer>)intent.getIntegerArrayListExtra("Gaps");
-        for(int i=0;i<gl.size();i++){
-            scheduleNotifications(gl.get(i));
-        }
+
         spinner = (Spinner)findViewById(R.id.currLoc);
         items = new ArrayList<>();
         timeGaps = new ArrayList<>();
@@ -76,6 +74,12 @@ public class OptimizeActivity extends AppCompatActivity implements AsyncResponse
         for(LocationDetails lds : ld){
             list.add(lds.getLoc_name());
         }
+
+        for(int i=0;i<gl.size()-1;i++){
+            Log.e("Scheduling",""+gl.get(i)+" Location "+list.get(i));
+            scheduleNotifications(gl.get(i),list.get(i));
+        }
+
         ArrayAdapter<String> dataAdapter = new ArrayAdapter<String>(this,R.layout.support_simple_spinner_dropdown_item,list);
         dataAdapter.setDropDownViewResource(R.layout.support_simple_spinner_dropdown_item);
         spinner.setAdapter(dataAdapter);
@@ -182,12 +186,12 @@ public class OptimizeActivity extends AppCompatActivity implements AsyncResponse
         alarmManager.set(AlarmManager.ELAPSED_REALTIME_WAKEUP, futureInMillis, pendingIntent);
     }
 
-    public void showNotification(){
+    public void showNotification(String place){
         NotificationCompat.Builder mBuilder =   new NotificationCompat.Builder(this)
-                .setSmallIcon(R.drawable.cast_ic_notification_small_icon) // notification icon
-                .setContentTitle("Notification!") // title for notification
-                .setContentText("Only Five minutes available") // message for notification
-                .setAutoCancel(true); // clear notification after click
+                .setSmallIcon(R.drawable.cast_ic_notification_small_icon)
+                .setContentTitle("Notification!")
+                .setContentText("You have only 5 mins left @ "+place)
+                .setAutoCancel(true);
         Intent intent = new Intent(this, OptimizeActivity.class);
         PendingIntent pi = PendingIntent.getActivity(this,0,intent,Intent.FLAG_ACTIVITY_NEW_TASK);
         mBuilder.setContentIntent(pi);
@@ -199,10 +203,11 @@ public class OptimizeActivity extends AppCompatActivity implements AsyncResponse
     private final ScheduledExecutorService scheduler =
             Executors.newScheduledThreadPool(1);
 
-    public void scheduleNotifications(int delay) {
+    public void scheduleNotifications(int delay,String place) {
+        final String loc = place;
         final Runnable beeper = new Runnable() {
             public void run() {
-                showNotification();
+                showNotification(loc);
             }
         };
         final ScheduledFuture<?> beeperHandle =

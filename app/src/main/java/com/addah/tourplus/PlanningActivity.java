@@ -116,8 +116,13 @@ public class PlanningActivity extends AppCompatActivity implements AsyncResponse
         String sep[] = time[1].split("\\s+");
         int totalSeg = 0;
         if(sep.length>0){
-        Log.e("Hr and min",sep[1]+" , "+sep[3]);
-            totalSeg += (Integer.parseInt(sep[1])*60)+Integer.parseInt(sep[3]);
+            if(sep.length>3) {
+                Log.e("Hr and min", sep[1] + " , " + sep[3]);
+                totalSeg += (Integer.parseInt(sep[1]) * 60) + Integer.parseInt(sep[3]);
+            }else{
+                Log.e("Min",sep[1]);
+                totalSeg += Integer.parseInt(sep[1]);
+            }
         }
         String wtime[] = tt[0].split(":");
         if(wtime.length>1) {
