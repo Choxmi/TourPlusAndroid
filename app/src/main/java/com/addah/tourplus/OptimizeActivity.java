@@ -1,9 +1,18 @@
 package com.addah.tourplus;
 
+import android.app.AlarmManager;
+import android.app.Notification;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.Intent;
+import android.graphics.drawable.BitmapDrawable;
+import android.media.RingtoneManager;
 import android.os.Bundle;
+import android.os.SystemClock;
 import android.support.annotation.Nullable;
+import android.support.v4.app.NotificationCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
@@ -18,6 +27,11 @@ import android.widget.Toast;
 import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledFuture;
+
+import static java.util.concurrent.TimeUnit.SECONDS;
 
 /**
  * Created by choxmi on 6/24/17.
@@ -26,8 +40,9 @@ import java.util.List;
 public class OptimizeActivity extends AppCompatActivity implements AsyncResponse{
 
     ArrayList<LocationDetails> ld;
+    ArrayList<Integer> gl;
     Spinner spinner;
-    int arrrayPosi,timeAvail;
+    int arrrayPosi,timeAvail,notiTimes;
     Button proceedBtn,analyzeBtn;
     EditText timeLimit;
     OptimizeConnector connector;
@@ -46,6 +61,10 @@ public class OptimizeActivity extends AppCompatActivity implements AsyncResponse
         timeLimit = (EditText)findViewById(R.id.timeSpnd);
         final Intent intent = getIntent();
         ld = (ArrayList<LocationDetails>)intent.getSerializableExtra("path");
+        gl = (ArrayList<Integer>)intent.getIntegerArrayListExtra("Gaps");
+        for(int i=0;i<gl.size();i++){
+            scheduleNotifications(gl.get(i));
+        }
         spinner = (Spinner)findViewById(R.id.currLoc);
         items = new ArrayList<>();
         timeGaps = new ArrayList<>();
@@ -92,6 +111,7 @@ public class OptimizeActivity extends AppCompatActivity implements AsyncResponse
         analyzeBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                scheduleNotification(OptimizeActivity.this,3,12);
                 items.clear();
                 timeAvail = Integer.parseInt(timeLimit.getText().toString())*60;
                 int timeDirect=0,fullTime = 0;
@@ -134,5 +154,61 @@ public class OptimizeActivity extends AppCompatActivity implements AsyncResponse
         if(timeGaps.size()==(ld.size()-arrrayPosi)){
             Toast.makeText(OptimizeActivity.this,"Retrieving complete",Toast.LENGTH_LONG).show();
         }
+        notiTimes += time;
+    }
+
+    public void scheduleNotification(Context context, long delay, int notificationId) {//delay is after how much time(in millis) from current time you want to schedule the notification
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(context)
+                .setContentTitle("Title")
+                .setContentText("Content")
+                .setAutoCancel(true)
+                .setSmallIcon(R.drawable.ic_dialog_close_dark)
+                .setLargeIcon(((BitmapDrawable) context.getResources().getDrawable(R.drawable.ic_dialog_close_dark)).getBitmap())
+                .setSound(RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION));
+
+        Intent intent = new Intent(context, OptimizeActivity.class);
+        PendingIntent activity = PendingIntent.getActivity(context, notificationId, intent, PendingIntent.FLAG_CANCEL_CURRENT);
+        builder.setContentIntent(activity);
+        Log.e("Noti","Sending");
+        Notification notification = builder.build();
+
+        Intent notificationIntent = new Intent(context, MyNotificationPublisher.class);
+        notificationIntent.putExtra("NotiID", notificationId);
+        notificationIntent.putExtra("NotiPub", notification);
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(context, notificationId, notificationIntent, PendingIntent.FLAG_CANCEL_CURRENT);
+
+        long futureInMillis = SystemClock.elapsedRealtime() + delay;
+        AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
+        alarmManager.set(AlarmManager.ELAPSED_REALTIME_WAKEUP, futureInMillis, pendingIntent);
+    }
+
+    public void showNotification(){
+        NotificationCompat.Builder mBuilder =   new NotificationCompat.Builder(this)
+                .setSmallIcon(R.drawable.cast_ic_notification_small_icon) // notification icon
+                .setContentTitle("Notification!") // title for notification
+                .setContentText("Only Five minutes available") // message for notification
+                .setAutoCancel(true); // clear notification after click
+        Intent intent = new Intent(this, OptimizeActivity.class);
+        PendingIntent pi = PendingIntent.getActivity(this,0,intent,Intent.FLAG_ACTIVITY_NEW_TASK);
+        mBuilder.setContentIntent(pi);
+        NotificationManager mNotificationManager =
+                (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+        mNotificationManager.notify(0, mBuilder.build());
+    }
+
+    private final ScheduledExecutorService scheduler =
+            Executors.newScheduledThreadPool(1);
+
+    public void scheduleNotifications(int delay) {
+        final Runnable beeper = new Runnable() {
+            public void run() {
+                showNotification();
+            }
+        };
+        final ScheduledFuture<?> beeperHandle =
+                scheduler.schedule(beeper,delay,SECONDS);
+        scheduler.schedule(new Runnable() {
+            public void run() { beeperHandle.cancel(true); }
+        }, 60 * 60, SECONDS);
     }
 }

@@ -27,6 +27,7 @@ import java.util.List;
 public class PlanningActivity extends AppCompatActivity implements AsyncResponse{
     ListView rec;
     List<String> items;
+    ArrayList<Integer> gaps;
     RouteConnector connector;
     ArrayAdapter<String> adapter;
     int totalDu=0;
@@ -46,6 +47,7 @@ public class PlanningActivity extends AppCompatActivity implements AsyncResponse
         String waypoints = "";
         final Intent intent = getIntent();
         ArrayList<LocationDetails> ld = (ArrayList<LocationDetails>)intent.getSerializableExtra("selected");
+        gaps = new ArrayList<Integer>();
         strt = (LocationDetails) intent.getSerializableExtra("start");
 
         for (int i = 0; i <= (ld.size()-1); i++) {
@@ -89,6 +91,7 @@ public class PlanningActivity extends AppCompatActivity implements AsyncResponse
             public void onClick(View v) {
                 Intent intent1 = new Intent(PlanningActivity.this,OptimizeActivity.class);
                 intent1.putExtra("path",intent.getSerializableExtra("selected"));
+                intent1.putIntegerArrayListExtra("Gaps",gaps);
                 startActivity(intent1);
             }
         });
@@ -101,8 +104,29 @@ public class PlanningActivity extends AppCompatActivity implements AsyncResponse
             res = response.split("-");
             response = res[0];
             totalDu = Integer.parseInt(res[1])+(totalWaiting*60);
+            Log.e("Dura",""+totalDu);
+            Log.e("RES",response);
         }
         items.add(response);
+        Log.e("Full",response);
+        String tt[] = response.split("\\*");
+        Log.e("Right",""+tt[1]);
+        String time[] = tt[1].split(":");
+        Log.e("Time",time[1]);
+        String sep[] = time[1].split("\\s+");
+        int totalSeg = 0;
+        if(sep.length>0){
+        Log.e("Hr and min",sep[1]+" , "+sep[3]);
+            totalSeg += (Integer.parseInt(sep[1])*60)+Integer.parseInt(sep[3]);
+        }
+        String wtime[] = tt[0].split(":");
+        if(wtime.length>1) {
+            String wait[] = wtime[1].split("\\s+");
+            Log.e("Waiting time", wait[0]);
+            totalSeg += Integer.parseInt(wait[1]);
+        }
+        Log.e("Gap",""+totalSeg);
+        gaps.add(totalSeg);
         if(totalDu!=0){
             int hr = totalDu/3600;
             int min = (totalDu%3600)/60;
